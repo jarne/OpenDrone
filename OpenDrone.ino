@@ -12,11 +12,14 @@
 
 /* Bibliotheken */
 
-
+#include <Arduino.h>
 
 /* gesetzte Einstellungen */
 
-
+#define MOTOR_FL 12
+#define MOTOR_FR 14
+#define MOTOR_RL 0
+#define MOTOR_RR 2
 
 /* globale Variablen */
 
@@ -25,9 +28,17 @@
 /* Hauptfunktionen */
 
 void setup() {
-    Serial.begin(9600);
+    pinMode(MOTOR_FL, OUTPUT);
+    pinMode(MOTOR_FR, OUTPUT);
+    pinMode(MOTOR_RL, OUTPUT); 
+    pinMode(MOTOR_RR, OUTPUT);
 }
 
 void loop() {
-    Serial.println("Hallo, das ist ein Test!");
+    digitalWrite(MOTOR_FL, HIGH);
+    digitalWrite(MOTOR_FR, HIGH);
+    digitalWrite(MOTOR_RL, HIGH);
+    digitalWrite(MOTOR_RR, HIGH);
+
+    delay(1000);
 }
