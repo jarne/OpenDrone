@@ -38,6 +38,10 @@ DNSServer dnsServer;
 
 WebSocketsServer socketServer(187);
 
+int zustand = 0;
+
+int derzGeschw = 0;
+
 /* Socket-Event-Handler */
 
 void handleWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -46,17 +50,22 @@ void handleWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t 
     }
 
     switch((int) payload[0]) {
-        case 48:
-            digitalWrite(MOTOR_FL, LOW);
-            digitalWrite(MOTOR_FR, LOW);
-            digitalWrite(MOTOR_RL, LOW);
-            digitalWrite(MOTOR_RR, LOW);
+        case 48: // stoppen
+            switch(zustand) {
+                case 1:
+                    zustand = 3;
+                    break;
+                case 2:
+                    zustand = 3;
+                    break;
+            }
             break;
-        case 49:
-            digitalWrite(MOTOR_FL, HIGH);
-            digitalWrite(MOTOR_FR, HIGH);
-            digitalWrite(MOTOR_RL, HIGH);
-            digitalWrite(MOTOR_RR, HIGH);
+        case 49: // starten
+            switch(zustand) {
+                case 0:
+                    zustand = 1;
+                    break;
+            }
             break;
     }
 }
@@ -85,4 +94,48 @@ void loop() {
     dnsServer.processNextRequest();
 
     socketServer.loop();
+
+    switch(zustand) {
+        case 0:
+            digitalWrite(MOTOR_FL, LOW);
+            digitalWrite(MOTOR_FR, LOW);
+            digitalWrite(MOTOR_RL, LOW);
+            digitalWrite(MOTOR_RR, LOW);
+            break;
+        case 1:
+            if(derzGeschw < 511) { // TODO: geht bis 1023 ! AUSNAHME !
+                derzGeschw++;
+
+                analogWrite(MOTOR_FL, derzGeschw);
+                analogWrite(MOTOR_FR, derzGeschw);
+                analogWrite(MOTOR_RL, derzGeschw);
+                analogWrite(MOTOR_RR, derzGeschw);
+
+                delay(5);
+
+                return;
+            }
+
+            zustand = 2;
+            break;
+        case 2:
+            // nichts ändern, einfach in Luft stehen
+            break;
+        case 3:
+            if(derzGeschw > 0) {
+                derzGeschw--;
+
+                analogWrite(MOTOR_FL, derzGeschw);
+                analogWrite(MOTOR_FR, derzGeschw);
+                analogWrite(MOTOR_RL, derzGeschw);
+                analogWrite(MOTOR_RR, derzGeschw);
+
+                delay(2);
+
+                return;
+            }
+
+            zustand = 0;
+            break;
+    }
 }
