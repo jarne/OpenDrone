@@ -20,17 +20,26 @@
 
 #include <WebSocketsServer.h>
 
-/* gesetzte Einstellungen */
+/* Netzwerk-Einstellungen */
 
 #define WIFI_NAME "DroneMaschien"
 
 #define IP_ADDRESS IPAddress(192, 168, 187, 1)
-#define SUBNET_MASK IPAddress(255, 255, 255, 0)
+#define SUBNET_MASK IPAddress(255, 255, 255, 248)
+
+/* Belegungs-Einstellungen */
 
 #define MOTOR_FL 5
 #define MOTOR_FR 4
 #define MOTOR_RL 0
 #define MOTOR_RR 13
+
+/* Motor-Ausgleichs-Einstellungen */
+
+#define FAC_FL 1
+#define FAC_FR 1
+#define FAC_RL 1
+#define FAC_RR 1
 
 /* globale Variablen */
 
@@ -41,6 +50,15 @@ WebSocketsServer socketServer(187);
 int zustand = 0;
 
 int derzGeschw = 0;
+
+/* Motoren-Ansteuerung */
+
+void adjustMotorSpeed(newSpeed) {
+    analogWrite(MOTOR_FL, newSpeed * FAC_FL);
+    analogWrite(MOTOR_FR, newSpeed * FAC_FR);
+    analogWrite(MOTOR_RL, newSpeed * FAC_RL);
+    analogWrite(MOTOR_RR, newSpeed * FAC_RR);
+}
 
 /* Socket-Event-Handler */
 
@@ -103,13 +121,10 @@ void loop() {
             digitalWrite(MOTOR_RR, LOW);
             break;
         case 1:
-            if(derzGeschw < 511) { // TODO: geht bis 1023 ! AUSNAHME !
+            if(derzGeschw < 511) {
                 derzGeschw++;
 
-                analogWrite(MOTOR_FL, derzGeschw);
-                analogWrite(MOTOR_FR, derzGeschw);
-                analogWrite(MOTOR_RL, derzGeschw);
-                analogWrite(MOTOR_RR, derzGeschw);
+                adjustMotorSpeed(derzGeschw);
 
                 delay(5);
 
@@ -118,17 +133,11 @@ void loop() {
 
             zustand = 2;
             break;
-        case 2:
-            // nichts ändern, einfach in Luft stehen
-            break;
         case 3:
             if(derzGeschw > 0) {
                 derzGeschw--;
 
-                analogWrite(MOTOR_FL, derzGeschw);
-                analogWrite(MOTOR_FR, derzGeschw);
-                analogWrite(MOTOR_RL, derzGeschw);
-                analogWrite(MOTOR_RR, derzGeschw);
+                adjustMotorSpeed(derzGeschw);
 
                 delay(2);
 
