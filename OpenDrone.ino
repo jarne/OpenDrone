@@ -53,7 +53,7 @@ int derzGeschw = 0;
 
 /* Motoren-Ansteuerung */
 
-void adjustMotorSpeed(newSpeed) {
+void adjustMotorSpeed(int newSpeed) {
     analogWrite(MOTOR_FL, newSpeed * FAC_FL);
     analogWrite(MOTOR_FR, newSpeed * FAC_FR);
     analogWrite(MOTOR_RL, newSpeed * FAC_RL);
