@@ -25,7 +25,7 @@
 #define WIFI_NAME "DroneMaschien"
 
 #define IP_ADDRESS IPAddress(192, 168, 187, 1)
-#define SUBNET_MASK IPAddress(255, 255, 255, 248)
+#define SUBNET_MASK IPAddress(255, 255, 255, 0)
 
 /* Belegungs-Einstellungen */
 
